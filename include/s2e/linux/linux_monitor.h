@@ -24,6 +24,7 @@
 #define S2E_LINUX_MONITOR_H
 
 #include <linux/sched.h>
+#include <linux/printk.h>
 
 #include <s2e/s2e.h>
 
@@ -40,7 +41,7 @@ static inline void s2e_linux_process_load(pid_t pid, const char *path)
 	cmd.Command = LINUX_PROCESS_LOAD;
 	cmd.currentPid = pid;
 
-	cmd.ProcessLoad.process_path = path;
+	cmd.ProcessLoad.process_path = (uint64_t)path;
 	s2e_invoke_plugin("LinuxMonitor", &cmd, sizeof(cmd));
 }
 
@@ -52,7 +53,7 @@ static inline void s2e_linux_module_load(const char *path, uint64_t pid, uint64_
 	cmd.Command = LINUX_MODULE_LOAD;
 	cmd.currentPid = pid;
 
-	cmd.ModuleLoad.module_path = path;
+	cmd.ModuleLoad.module_path = (uint64_t)path;
 	cmd.ModuleLoad.entry_point = entry_point;
 	cmd.ModuleLoad.phdr = (uintptr_t)phdr;
 	cmd.ModuleLoad.phdr_size = phdr_size;
@@ -111,6 +112,8 @@ static inline void s2e_linux_init(uint64_t page_offset, uint64_t start_kernel, u
 	cmd.Init.current_task_address = current_task_address;
 	cmd.Init.task_struct_pid_offset = task_struct_pid_offset;
 	cmd.Init.task_struct_tgid_offset = task_struct_tgid_offset;
+	cmd.Init.log_buf = (uint64_t)log_buf_addr_get();
+	cmd.Init.log_buf_len = (uint64_t)log_buf_len_get();
 
 	s2e_invoke_plugin("LinuxMonitor", &cmd, sizeof(cmd));
 }

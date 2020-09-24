@@ -40,6 +40,7 @@
 
 #ifdef __KERNEL__
 #include <linux/types.h>
+#include <linux/kernel.h>
 #else
 #include <inttypes.h>
 #endif
@@ -147,7 +148,7 @@ static inline void s2e_message(const char *message) {
 /// \param[in] ... Arguments to the format string
 /// \return The number of characters printed
 ///
-static int s2e_printf(const char *format, ...) {
+static int __maybe_unused s2e_printf(const char *format, ...) {
     char buffer[512];
     va_list args;
     int ret;

@@ -113,6 +113,9 @@ struct S2E_LINUXMON_COMMAND_INIT {
 	uint64_t current_task_address;
 	uint64_t task_struct_pid_offset;
 	uint64_t task_struct_tgid_offset;
+	// console log - dmesg
+	uint64_t log_buf;
+	uint64_t log_buf_len;
 } __attribute__((packed));
 
 struct S2E_LINUXMON_COMMAND_KERNEL_PANIC {
