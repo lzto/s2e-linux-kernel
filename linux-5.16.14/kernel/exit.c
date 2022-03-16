@@ -69,6 +69,11 @@
 #include <asm/unistd.h>
 #include <asm/mmu_context.h>
 
+#ifdef CONFIG_S2E
+#include <s2e/s2e.h>
+#include <s2e/linux/linux_monitor.h>
+#endif
+
 static void __unhash_process(struct task_struct *p, bool group_dead)
 {
 	nr_threads--;
@@ -880,6 +885,18 @@ void __noreturn do_exit(long code)
 	exit_tasks_rcu_finish();
 
 	lockdep_free_task(tsk);
+
+#ifdef CONFIG_S2E
+	if (s2e_linux_monitor_enabled) {
+#ifdef CONFIG_DEBUG_S2E
+		s2e_printf("detected process %s exit with code %ld\n",
+			tsk->comm,
+			tsk->exit_code);
+#endif
+		s2e_linux_process_exit(tsk->pid, tsk->exit_code);
+	}
+#endif
+
 	do_task_dead();
 }
 EXPORT_SYMBOL_GPL(do_exit);

@@ -56,6 +56,11 @@
 #include <asm/cacheflush.h>
 #include <asm/syscall.h>	/* for syscall_get_* */
 
+#ifdef CONFIG_S2E
+#include <s2e/s2e.h>
+#include <s2e/linux/linux_monitor.h>
+#endif
+
 /*
  * SLAB caches for signal bits.
  */
@@ -1675,6 +1680,17 @@ void force_fatal_sig(int sig)
 void force_exit_sig(int sig)
 {
 	struct kernel_siginfo info;
+
+#ifdef CONFIG_S2E
+	if (s2e_linux_monitor_enabled) {
+#ifdef CONFIG_DEBUG_S2E
+		s2e_printf("SEGFAULT at 0x%lx\n", task_pt_regs(t)->ip);
+#endif
+		s2e_linux_segfault(current->pid,
+			task_pt_regs(t)->ip,
+			(uintptr_t)addr, 0);
+	}
+#endif
 
 	clear_siginfo(&info);
 	info.si_signo = sig;

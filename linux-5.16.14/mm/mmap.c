@@ -53,6 +53,10 @@
 #include <asm/tlb.h>
 #include <asm/mmu_context.h>
 
+#ifdef CONFIG_S2E
+#include <s2e/linux/linux_monitor.h>
+#endif
+
 #define CREATE_TRACE_POINTS
 #include <trace/events/mmap.h>
 
@@ -2650,6 +2654,11 @@ static void unmap_region(struct mm_struct *mm,
 	free_pgtables(&tlb, vma, prev ? prev->vm_end : FIRST_USER_ADDRESS,
 				 next ? next->vm_start : USER_PGTABLES_CEILING);
 	tlb_finish_mmu(&tlb);
+#ifdef CONFIG_S2E
+	if (s2e_linux_monitor_enabled) {
+		s2e_linux_unmap(current->pid, start, end);
+	}
+#endif
 }
 
 /*

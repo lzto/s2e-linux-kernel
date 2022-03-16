@@ -34,6 +34,11 @@
 #include <asm/vdso.h>			/* fixup_vdso_exception()	*/
 #include <asm/irq_stack.h>
 
+#ifdef CONFIG_S2E
+#include <s2e/s2e.h>
+#include <s2e/linux/linux_monitor.h>
+#endif
+
 #define CREATE_TRACE_POINTS
 #include <asm/trace/exceptions.h>
 

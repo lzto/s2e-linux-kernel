@@ -62,6 +62,11 @@
 #include <asm/insn-eval.h>
 #include <asm/vdso.h>
 
+#ifdef CONFIG_S2E
+#include <s2e/s2e.h>
+#include <s2e/linux/linux_monitor.h>
+#endif
+
 #ifdef CONFIG_X86_64
 #include <asm/x86_init.h>
 #include <asm/proto.h>
@@ -162,6 +167,14 @@ do_trap(int trapnr, int signr, char *str, struct pt_regs *regs,
 		return;
 
 	show_signal(tsk, signr, "trap ", str, regs, error_code);
+#ifdef CONFIG_S2E
+	if (s2e_linux_monitor_enabled) {
+#ifdef CONFIG_DEBUG_S2E
+		s2e_printf("TRAP %ld at 0x%lx\n", error_code, task_pt_regs(tsk)->ip);
+#endif
+		s2e_linux_trap(tsk->pid, task_pt_regs(tsk)->ip, trapnr, signr, error_code);
+	}
+#endif
 
 	if (!sicode)
 		force_sig(signr);

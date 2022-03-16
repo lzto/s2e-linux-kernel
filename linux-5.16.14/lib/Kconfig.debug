@@ -600,6 +600,11 @@ config DEBUG_MISC
 	  be under a more specific debug option but isn't.
 
 
+config DEBUG_S2E
+    bool "S2E debugging"
+    help
+      Say Y here if you are trying to debug the S2E Linux monitor.
+
 menu "Memory Debugging"
 
 source "mm/Kconfig.debug"
