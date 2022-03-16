@@ -36,7 +36,7 @@
 #ifndef S2E_CUSTOM_INSTRUCTIONS_H
 #define S2E_CUSTOM_INSTRUCTIONS_H
 
-#include <stdarg.h>
+#include <linux/stdarg.h>
 
 #ifdef __KERNEL__
 #include <linux/types.h>

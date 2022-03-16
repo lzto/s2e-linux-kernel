@@ -1680,18 +1680,6 @@ void force_fatal_sig(int sig)
 void force_exit_sig(int sig)
 {
 	struct kernel_siginfo info;
-
-#ifdef CONFIG_S2E
-	if (s2e_linux_monitor_enabled) {
-#ifdef CONFIG_DEBUG_S2E
-		s2e_printf("SEGFAULT at 0x%lx\n", task_pt_regs(t)->ip);
-#endif
-		s2e_linux_segfault(current->pid,
-			task_pt_regs(t)->ip,
-			(uintptr_t)addr, 0);
-	}
-#endif
-
 	clear_siginfo(&info);
 	info.si_signo = sig;
 	info.si_errno = 0;
@@ -1699,6 +1687,17 @@ void force_exit_sig(int sig)
 	info.si_pid = 0;
 	info.si_uid = 0;
 	force_sig_info_to_task(&info, current, HANDLER_EXIT);
+
+#ifdef CONFIG_S2E
+	if (s2e_linux_monitor_enabled) {
+#ifdef CONFIG_DEBUG_S2E
+		s2e_printf("SEGFAULT at 0x%lx\n", task_pt_regs(current)->ip);
+#endif
+		s2e_linux_segfault(current->pid,
+			task_pt_regs(current)->ip,
+			(uintptr_t)info.si_addr, 0);
+	}
+#endif
 }
 
 /*
